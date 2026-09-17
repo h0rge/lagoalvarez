@@ -7,6 +7,9 @@
           <label>DNI/CIF:</label>
           <input v-model="novoPaciente.dni" type="text" required style="text-align: center;" />
         </div>
+        <div v-if="validarDni">
+          <p class="error">O DNI/CIF non é válido</p>
+        </div>
         <div class="campo campo-nome">
           <label>Nome:</label>
           <input v-model="novoPaciente.nome" type="text" required />
@@ -84,6 +87,7 @@
           <td style="text-align: center;">{{ u.dni }}</td>
           <td>{{ u.nome }}</td>
           <td>{{ u.apelido }}</td>
+          <td>{{ u.fechaNacemento }}</td>
           <td>{{ u.correo }}</td>
           <td>{{ u.provincia }}</td>
           <td style="text-align: center;">{{ u.activo ? "✅" : "❌" }}</td>
@@ -141,6 +145,21 @@ function eliminarPaciente(index) {
 function editarPaciente(index) {
   const paciente = paciente.value[index];   //carga os datos do paciente elixido no formulario
   Object.assign(novoPaciente, paciente);  // carga os datos do paciente no formulario recorda v-model do formulario é novoPaciente
+}
+
+//===================================================================================
+// Funciones auxiliares
+
+function validarDni() {
+  const dniregex = /^[0-9]{8}[A-Z]$/; // Expresión regular para validar el formato del DNI
+  return dniregex.test(novoPaciente.dni);
+}
+
+function validarDni2() {
+  const dniarray = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'];
+  const numerosDni = novoPaciente.dni.slice(0, 8);
+  const letraDni = novoPaciente.dni.slice(8, 9);
+  return 
 }
 
 </script>
@@ -232,9 +251,11 @@ form {
 }
 
 .btn-guardar {
-  background-color: #007bff;
+  background-color: #057559;
   color: white;
-  border: none;
+  border: 3px solid #00aa1c;
+  border-image: linear-gradient(45deg, #00aa1c, #0000ff) 1; /* Define los dos colores y el ángulo */
+  padding: 20px;
   padding: 0.4rem 1.5rem;
   border-radius: 0px;
   cursor: pointer;
@@ -243,7 +264,7 @@ form {
 }
 
 .btn-guardar:hover {
-  background-color: #0056b3;
+  background-color: #637a76;
   border-radius: 0px;
 }
 
@@ -284,7 +305,7 @@ th {
 h4 {
   margin-bottom: 1rem;
   font-weight: 600;
-  background-color: #73aff0;
+  background-color: #07c751;
   color: white;
 }
 
