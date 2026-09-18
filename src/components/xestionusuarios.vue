@@ -5,18 +5,33 @@
       <div class="fila">
         <div class="campo campo-dni">
           <label>DNI/CIF:</label>
-          <input v-model="novoPaciente.dni" type="text" required style="text-align: center;" />
+          <input v-model="novoPaciente.dni" 
+            v-on:input="novoPaciente.dni = novoPaciente.dni.toUpperCase()" 
+            type="text" required style="text-align: center;" />
         </div>
-        <div v-if="validarDni">
+        <div
+          v-if="novoPaciente.dni !== '' && (!validarDni() || !validarDni2())"
+          class="error-message"
+          >
           <p class="error">O DNI/CIF non é válido</p>
         </div>
         <div class="campo campo-nome">
           <label>Nome:</label>
-          <input v-model="novoPaciente.nome" type="text" required />
+          <input 
+            v-model="novoPaciente.nome" 
+            type="text"
+            @keyup.enter="corrixirNome()"
+            @blur="corrixirNome()"
+            required />
         </div>
         <div class="campo campo-apelido">
           <label>Apelido:</label>
-          <input v-model="novoPaciente.apelido" type="text" required />
+          <input 
+          v-model="novoPaciente.apelido" 
+          type="text" 
+          @keyup.enter="corrixirApelido()"
+          @blur="corrixirApelido()"
+          required />
         </div>
       </div>
       <div class="fila">
@@ -28,14 +43,30 @@
           <label>Correo:</label>
           <input v-model="novoPaciente.correo" type="email" required />
         </div>
+        <div class="campo campo-dirección">
+          <label>Dirección:</label>
+          <input v-model="novoPaciente.direccion" type="text" required />
+        </div>
+      </div>
+      <div class="fila">
+        <div class="campo campo-telefono">
+          <label>Telefono:</label>
+          <input 
+          v-model="novoPaciente.telefono"
+          type="text"
+          required />
+        </div>
         <div class="campo campo-provincia">
           <label>Provincia:</label>
-          <select v-model="novoPaciente.provincia">
-            <option value="">-- Escolle unha provincia --</option>
-            <option>A Coruña</option>
-            <option>Lugo</option>
-            <option>Ourense</option>
-            <option>Pontevedra</option>
+          <select v-model="novoPaciente.provincia" required>
+            <option value="">Selecciona unha provincia</option>
+            <option 
+            v-for="provincia in provincias" 
+            :key="provincia.id" 
+            :value="provincia.nombre"
+          >
+              {{ provincia.nombre }}
+            </option>
           </select>
         </div>
       </div>
@@ -75,6 +106,7 @@
           <th>Apelido</th>
           <th>Fecha de nacemento</th>
           <th>Correo</th>
+          <th>Dirección</th>
           <th>Provincia</th>
           <th>Activo</th>
           <th>Tipo de conta</th>
@@ -89,6 +121,7 @@
           <td>{{ u.apelido }}</td>
           <td>{{ u.fechaNacemento }}</td>
           <td>{{ u.correo }}</td>
+          <td>{{ u.direccion }}</td>
           <td>{{ u.provincia }}</td>
           <td style="text-align: center;">{{ u.activo ? "✅" : "❌" }}</td>
           <td>{{ u.tipoCuenta }}</td>
@@ -108,6 +141,7 @@
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
 
+const provincias = ref([])
 const paciente = ref([])  //almacena la lista de paciente e os seus cambios
 
 const novoPaciente = reactive({
@@ -115,6 +149,7 @@ const novoPaciente = reactive({
   nome: "",
   apelido: "",
   correo: "",
+  direccion: "",
   provincia: "",
   activo: false,
   tipoCuenta: ""
@@ -129,11 +164,21 @@ onMounted(() => {       //sempre se cargan estos paciente de exemplo ao iniciar 
     { dni: "B1234567D", nome: "Xosé López", correo: "xose@email.com", provincia: "Ourense", activo: true, tipoCuenta: "particular" },
     { dni: "C9876543E", nome: "Construcións Modernas", correo: "construcion@email.com", provincia: "Pontevedra", activo: true, tipoCuenta: "empresa" }
   ]
+
+  provincias.value = [
+    { id: "1", nombre: "A Coruña" },
+    { id: "2", nombre: "Lugo" },
+    { id: "3", nombre: "Ourense" },
+    { id: "4", nombre: "Pontevedra" }
+  ]
 })
 
 /// Zona de métodos ou funcións
 
 function gardarPaciente() {
+  if (!validarDni() || !validarDni2()) {
+    return;
+  }
   paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
   Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", activo: false, tipoCuenta: "" }) //reinicia o formulario
 }
@@ -152,19 +197,45 @@ function editarPaciente(index) {
 
 function validarDni() {
   const dniregex = /^[0-9]{8}[A-Z]$/; // Expresión regular para validar el formato del DNI
-  return dniregex.test(novoPaciente.dni);
+  return dniregex.test(novoPaciente.dni.toUpperCase());
 }
 
 function validarDni2() {
   const dniarray = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'];
   const numerosDni = novoPaciente.dni.slice(0, 8);
   const letraDni = novoPaciente.dni.slice(8, 9);
-  return 
+  return dniarray[numerosDni % 23] === letraDni.toUpperCase();
+}
+
+function corrixirNome() {
+  if (novoPaciente.nome.length > 0) {
+    novoPaciente.nome = novoPaciente.nome
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+  }
+}
+function corrixirApelido() {
+  if (novoPaciente.apelido.length > 0) {
+    novoPaciente.apelido = novoPaciente.apelido
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+  }
+
 }
 
 </script>
 
 <style scoped>
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.2rem;
+}
 .xestion-paciente {
   width: 100%;
   /* opcional para que no crezca demasiado en pantallas muy grandes */
@@ -320,6 +391,10 @@ h4 {
     /* apila los campos verticalmente en móviles */
     gap: 0.5rem;
     /* opcional: un pequeño espacio entre ellos */
+  }
+
+  .campo-dni {
+    background-color: red;
   }
 }
 </style>
