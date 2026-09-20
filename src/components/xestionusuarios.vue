@@ -56,6 +56,12 @@
           type="text"
           required />
         </div>
+        <div
+	        v-if="novoPaciente.telefono !== '' && (!validarTelf())"
+	        class="error-message"
+        >
+        <p class="error">O teléfono non é válido</p>
+      </div>
         <div class="campo campo-provincia">
           <label>Provincia:</label>
           <select v-model="novoPaciente.provincia" required>
@@ -107,6 +113,7 @@
           <th>Fecha de nacemento</th>
           <th>Correo</th>
           <th>Dirección</th>
+          <th>Teléfono</th>
           <th>Provincia</th>
           <th>Activo</th>
           <th>Tipo de conta</th>
@@ -122,6 +129,7 @@
           <td>{{ u.fechaNacemento }}</td>
           <td>{{ u.correo }}</td>
           <td>{{ u.direccion }}</td>
+          <td>{{ u.telefono }}</td>
           <td>{{ u.provincia }}</td>
           <td style="text-align: center;">{{ u.activo ? "✅" : "❌" }}</td>
           <td>{{ u.tipoCuenta }}</td>
@@ -148,8 +156,10 @@ const novoPaciente = reactive({
   dni: "",
   nome: "",
   apelido: "",
+  fechaNacimiento: "",
   correo: "",
   direccion: "",
+  telefono:"",
   provincia: "",
   activo: false,
   tipoCuenta: ""
@@ -178,9 +188,11 @@ onMounted(() => {       //sempre se cargan estos paciente de exemplo ao iniciar 
 function gardarPaciente() {
   if (!validarDni() || !validarDni2()) {
     return;
+  } else if (!validarTelf()) {
+    return;
   }
   paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
-  Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", activo: false, tipoCuenta: "" }) //reinicia o formulario
+  Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", activo: false, tipoCuenta: "", telefono: "", fechaNacimiento: "" }) //reinicia o formulario
 }
 
 function eliminarPaciente(index) {
@@ -216,6 +228,7 @@ function corrixirNome() {
     .join(' ');
   }
 }
+
 function corrixirApelido() {
   if (novoPaciente.apelido.length > 0) {
     novoPaciente.apelido = novoPaciente.apelido
@@ -224,7 +237,13 @@ function corrixirApelido() {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
   }
+}
 
+function validarTelf() {
+  const telfRegex = /^[6|7]\d{8}$/;
+  if (novoPaciente.telefono != "") {
+	  return telfRegex.test(novoPaciente.telefono.trim());
+  }
 }
 
 </script>
