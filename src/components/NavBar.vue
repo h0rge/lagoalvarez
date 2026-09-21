@@ -26,7 +26,7 @@ const isOpen = ref(false) // actívase cuando fago click
   justify-content: space-between;
   align-items: center;
   padding: 0.1rem 6rem;
-  background: #1b4965;
+  background: #1b6534;
   color: white;
 }
 

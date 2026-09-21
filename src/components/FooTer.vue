@@ -11,12 +11,17 @@
 
 <style scoped>
 .footer {
-  background: #1b4965;
+  background: #1b6534;
   color: white;
   text-align: center;
   padding: 0.2rem 6rem;
   margin-top: 3rem;
   font-size: 0.9rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 75vw;
+  z-index: 1000;
 }
 
 .link-aviso {
