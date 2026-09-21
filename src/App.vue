@@ -1,12 +1,18 @@
 <template>
-  <main class="container">
-    <xestionusuarios />
-  </main>
+  <div id="app">
+
+    <main class="container">
+      <NavBar />
+      <router-view />
+      <FooTer />
+    </main>
+  </div>
 </template>
 
   <script setup>
   import HelloWorld from './components/HelloWorld.vue'
-import Xestionusuarios from './components/xestionusuarios.vue';
+  import NavBar from './components/NavBar.vue';
+  import FooTer from './components/FooTer.vue';
   </script>
 
 
