@@ -22,10 +22,12 @@ const isOpen = ref(false) // actívase cuando fago click
 
 <style scoped>
 .navbar {
+  box-sizing: border-box;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.1rem 6rem;
+  padding: 1rem;
   background: #1b6534;
   color: white;
 }

@@ -35,9 +35,9 @@
         </div>
       </div>
       <div class="fila">
-        <div class="campo campo-fecha-nacimiento">
-          <label>Fecha de nacemento:</label>
-          <input v-model="novoPaciente.fechaNacimiento" type="date" required />
+        <div class="campo campo-data-nacimiento">
+          <label>Data de nacemento:</label>
+          <input v-model="novoPaciente.DataNacimiento" type="date" required />
         </div>
         <div class="campo campo-correo">
           <label>Correo:</label>
@@ -110,7 +110,7 @@
           <th>DNI/CIF</th>
           <th>Nome</th>
           <th>Apelido</th>
-          <th>Fecha de nacemento</th>
+          <th>Data de nacemento</th>
           <th>Correo</th>
           <th>Dirección</th>
           <th>Teléfono</th>
@@ -126,7 +126,7 @@
           <td style="text-align: center;">{{ u.dni }}</td>
           <td>{{ u.nome }}</td>
           <td>{{ u.apelido }}</td>
-          <td>{{ u.fechaNacemento }}</td>
+          <td>{{ u.DataNacemento }}</td>
           <td>{{ u.correo }}</td>
           <td>{{ u.direccion }}</td>
           <td>{{ u.telefono }}</td>
@@ -156,7 +156,7 @@ const novoPaciente = reactive({
   dni: "",
   nome: "",
   apelido: "",
-  fechaNacimiento: "",
+  DataNacimiento: "",
   correo: "",
   direccion: "",
   telefono:"",
@@ -192,7 +192,7 @@ function gardarPaciente() {
     return;
   }
   paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
-  Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", activo: false, tipoCuenta: "", telefono: "", fechaNacimiento: "" }) //reinicia o formulario
+  Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", activo: false, tipoCuenta: "", telefono: "", DataNacimiento: "" }) //reinicia o formulario
 }
 
 function eliminarPaciente(index) {
@@ -250,6 +250,7 @@ function validarTelf() {
 
 <style scoped>
 
+
 .error {
   color: red;
   font-size: 0.9rem;
@@ -264,17 +265,22 @@ function validarTelf() {
   border-radius: 2px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 form {
-  width: 100%;
   display: flex;
+  padding: 2rem;
+  align-self: center;
+  width: 100%;
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .fila {
+  flex-wrap: wrap;
   display: flex;
   gap: 1rem;
   width: 100%;
@@ -285,6 +291,7 @@ form {
 }
 
 .campo {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
   /* label e input en la misma línea */
@@ -302,6 +309,11 @@ form {
   flex: 3;
   /* ocupa más espacio */
   border-radius: 0px;
+}
+
+.campo-data-nacemento {
+  flex: 0.5;
+  /* ocupa menos espacio */
 }
 
 .campo-correo {
@@ -325,7 +337,7 @@ form {
 }
 
 .campo label {
-  min-width: 80px;
+  max-width: 100px;
   /* ancho fijo para alinear */
   font-weight: 500;
   font: bold
@@ -375,6 +387,7 @@ form {
 table {
   width: 100%;
   border-collapse: separate;
+  align-self: center;
   margin-top: 1rem;
   font-size: 0.8rem;
   border: 1px solid #ddd;
@@ -393,6 +406,8 @@ th {
 }
 
 h4 {
+  width: 100%;
+  text-align: center;
   margin-bottom: 1rem;
   font-weight: 600;
   background-color: #07c751;

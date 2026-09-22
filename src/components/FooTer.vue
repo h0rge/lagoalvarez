@@ -10,18 +10,20 @@
 <script setup></script>
 
 <style scoped>
+footer {
+  box-sizing: border-box;
+  position: static;
+  justify-self: center;
+  width: 100%;
+}
+
 .footer {
   background: #1b6534;
   color: white;
   text-align: center;
-  padding: 0.2rem 6rem;
+  padding: 0.2rem;
   margin-top: 3rem;
   font-size: 0.9rem;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 75vw;
-  z-index: 1000;
 }
 
 .link-aviso {

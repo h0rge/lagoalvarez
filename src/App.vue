@@ -18,11 +18,16 @@
 
 <style>
 .container {
-  width: 75vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
   max-width: 1400px;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0 auto;
   padding: 1rem;
+  padding-bottom: 0;
   box-sizing: border-box;
 }
 
