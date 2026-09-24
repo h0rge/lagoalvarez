@@ -5,6 +5,7 @@ import cors from "cors"; //evita bloqueos entre servidores
 //creamos la aplicacion express
 const app = express();
 app.use(cors());
+const PORT = 3000;
 
 //ruta de la api para obtener provincias y municipios
 app.get('/api/municipios', (req, res) => {
@@ -18,6 +19,7 @@ app.get('/api/municipios', (req, res) => {
 
 });
 
-app.listen(3000, () => {
-    console.log("Servidor iniciado en el http://localhost:3000");
+
+app.listen(PORT, () => {
+    console.log(`Servidor iniciado en el http://localhost:${PORT}`);
 });

@@ -64,14 +64,33 @@
       </div>
         <div class="campo campo-provincia">
           <label>Provincia:</label>
-          <select v-model="novoPaciente.provincia" required>
+          <select 
+            id="provincia"
+            v-model="novoPaciente.provincia" 
+            @change="cargarMunicipios()"
+            required>
             <option value="">Selecciona unha provincia</option>
             <option 
-            v-for="provincia in provincias" 
-            :key="provincia.id" 
-            :value="provincia.nombre"
+              v-for="provincia in provincias" 
+              :key="provincia.id" 
+              :value="provincia.nm"
           >
-              {{ provincia.nombre }}
+              {{ provincia.nm }}
+            </option>
+          </select>
+        </div>
+        <div class="campo campo-municipio">
+          <label>Municipio:</label>
+          <select 
+          id="municipio"
+          v-model="novoPaciente.municipio" required>
+            <option value="">Selecciona un municipio</option>
+            <option 
+            v-for="municipio in municipios" 
+            :key="municipio.id" 
+            :value="municipio.nm"
+          >
+              {{ municipio.nm }}
             </option>
           </select>
         </div>
@@ -148,8 +167,11 @@
 <script setup>
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
+import {obtenerMunicipios, obtenerProvincias } from "../api/municipios"
 
 const provincias = ref([])
+const municipios = ref([])
+
 const paciente = ref([])  //almacena la lista de paciente e os seus cambios
 
 const novoPaciente = reactive({
@@ -161,13 +183,14 @@ const novoPaciente = reactive({
   direccion: "",
   telefono:"",
   provincia: "",
+  municipio: "",
   activo: false,
   tipoCuenta: ""
 })
 
 /// Zona de ciclo de vida
 
-onMounted(() => {       //sempre se cargan estos paciente de exemplo ao iniciar o componente
+onMounted(async () => {       //sempre se cargan estos paciente de exemplo ao iniciar o componente
   paciente.value = [
     { dni: "A000000C", nome: "Soldaduras SL", correo: "soldadura@email.com", provincia: "A Coruña", activo: true, tipoCuenta: "empresa" },
     { dni: "0000000C", nome: "María Pérez", correo: "maria@email.com", provincia: "Lugo", activo: false, tipoCuenta: "particular" },
@@ -175,13 +198,20 @@ onMounted(() => {       //sempre se cargan estos paciente de exemplo ao iniciar 
     { dni: "C9876543E", nome: "Construcións Modernas", correo: "construcion@email.com", provincia: "Pontevedra", activo: true, tipoCuenta: "empresa" }
   ]
 
-  provincias.value = [
-    { id: "1", nombre: "A Coruña" },
-    { id: "2", nombre: "Lugo" },
-    { id: "3", nombre: "Ourense" },
-    { id: "4", nombre: "Pontevedra" }
-  ]
+  provincias.value = await obtenerProvincias()  //carga as provincias desde o backend
+  municipios.value = await obtenerMunicipios(provincias.value[0].id)  //carga os municipios da primeira provincia
 })
+
+async function cargarMunicipios() {
+  if (novoPaciente.provincia ==="") {
+    municipios.value = [];
+    return;
+  }
+  const provincia = provincias.value.find(
+    provincia => provincia.nm === novoPaciente.provincia
+  )
+  municipios.value = await obtenerMunicipios(provincia.id);
+}
 
 /// Zona de métodos ou funcións
 
@@ -192,7 +222,7 @@ function gardarPaciente() {
     return;
   }
   paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
-  Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", activo: false, tipoCuenta: "", telefono: "", DataNacimiento: "" }) //reinicia o formulario
+  Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", municipio: "", activo: false, tipoCuenta: "", telefono: "", DataNacimiento: "" }) //reinicia o formulario
 }
 
 function eliminarPaciente(index) {
@@ -300,7 +330,7 @@ form {
 }
 
 .campo-dni {
-  flex: 1;
+  flex: 3;
   /* ocupa menos espacio */
   border-radius: 0px;
 }
