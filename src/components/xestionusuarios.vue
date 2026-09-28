@@ -199,18 +199,15 @@ onMounted(async () => {       //sempre se cargan estos paciente de exemplo ao in
   ]
 
   provincias.value = await obtenerProvincias()  //carga as provincias desde o backend
-  municipios.value = await obtenerMunicipios(provincias.value[0].id)  //carga os municipios da primeira provincia
 })
 
 async function cargarMunicipios() {
-  if (novoPaciente.provincia ==="") {
+  if (novoPaciente.provincia === "") {
     municipios.value = [];
     return;
   }
-  const provincia = provincias.value.find(
-    provincia => provincia.nm === novoPaciente.provincia
-  )
-  municipios.value = await obtenerMunicipios(provincia.id);
+  
+  municipios.value = await obtenerMunicipios(novoPaciente.provincia);
 }
 
 /// Zona de métodos ou funcións
