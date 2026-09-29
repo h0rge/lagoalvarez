@@ -5,12 +5,12 @@
       <div class="fila">
         <div class="campo campo-dni">
           <label>DNI/CIF:</label>
-          <input v-model="novoPaciente.dni" 
-            v-on:input="novoPaciente.dni = novoPaciente.dni.toUpperCase()" 
+          <input v-model="novoPaciente.dnipac" 
+            v-on:input="novoPaciente.dnipac = novoPaciente.dnipac.toUpperCase()" 
             type="text" required style="text-align: center;" />
         </div>
         <div
-          v-if="novoPaciente.dni !== '' && (!validarDni() || !validarDni2())"
+          v-if="novoPaciente.dnipac !== '' && (!validarDni() || !validarDni2())"
           class="error-message"
           >
           <p class="error">O DNI/CIF non é válido</p>
@@ -18,7 +18,7 @@
         <div class="campo campo-nome">
           <label>Nome:</label>
           <input 
-            v-model="novoPaciente.nome" 
+            v-model="novoPaciente.nomepac" 
             type="text"
             @keyup.enter="corrixirNome()"
             @blur="corrixirNome()"
@@ -27,7 +27,7 @@
         <div class="campo campo-apelido">
           <label>Apelido:</label>
           <input 
-          v-model="novoPaciente.apelido" 
+          v-model="novoPaciente.apelpac" 
           type="text" 
           @keyup.enter="corrixirApelido()"
           @blur="corrixirApelido()"
@@ -37,27 +37,27 @@
       <div class="fila">
         <div class="campo campo-data-nacimiento">
           <label>Data de nacemento:</label>
-          <input v-model="novoPaciente.DataNacimiento" type="date" required />
+          <input v-model="novoPaciente.nacipac" type="date" required />
         </div>
         <div class="campo campo-correo">
           <label>Correo:</label>
-          <input v-model="novoPaciente.correo" type="email" required />
+          <input v-model="novoPaciente.mailpac" type="email" required />
         </div>
         <div class="campo campo-dirección">
           <label>Dirección:</label>
-          <input v-model="novoPaciente.direccion" type="text" required />
+          <input v-model="novoPaciente.dirpac" type="text" required />
         </div>
       </div>
       <div class="fila">
         <div class="campo campo-telefono">
           <label>Telefono:</label>
           <input 
-          v-model="novoPaciente.telefono"
+          v-model="novoPaciente.movilpac"
           type="text"
           required />
         </div>
         <div
-	        v-if="novoPaciente.telefono !== '' && (!validarTelf())"
+	        v-if="novoPaciente.movilpac !== '' && (!validarTelf())"
 	        class="error-message"
         >
         <p class="error">O teléfono non é válido</p>
@@ -66,7 +66,7 @@
           <label>Provincia:</label>
           <select 
             id="provincia"
-            v-model="novoPaciente.provincia" 
+            v-model="novoPaciente.propac" 
             @change="cargarMunicipios()"
             required>
             <option value="">Selecciona unha provincia</option>
@@ -83,7 +83,7 @@
           <label>Municipio:</label>
           <select 
           id="municipio"
-          v-model="novoPaciente.municipio" required>
+          v-model="novoPaciente.munipac" required>
             <option value="">Selecciona un municipio</option>
             <option 
             v-for="municipio in municipios" 
@@ -95,29 +95,7 @@
           </select>
         </div>
       </div>
-      <div class="fila fila-centrada">
-        <div class="campo inline-activo">
-          <label>Activo:</label>
-          <div class="inline-control">
-            <input v-model="novoPaciente.activo" type="checkbox" />
-            <span>Activo</span>
-          </div>
-        </div>
-        <div class="campo inline-cuenta">
-          <label>Tipo de conta:</label>
-          <div class="inline-control radios">
-            <label>
-              <input v-model="novoPaciente.tipoCuenta" type="radio" value="particular" />
-              <span>Particular</span>
-            </label>
-            <label>
-              <input v-model="novoPaciente.tipoCuenta" type="radio" value="empresa" />
-              <span>Empresa</span>
-            </label>
-          </div>
-        </div>
-      </div>
-      <button type="submit" class="btn-guardar" :disabled="novoPaciente.dni === '' || novoPaciente.nome === ''">
+      <button type="submit" class="btn-guardar" :disabled="novoPaciente.dnipac === '' || novoPaciente.nomepac === ''">
         Gardar
       </button>
     </form>
@@ -128,30 +106,18 @@
           <th>#</th>
           <th>DNI/CIF</th>
           <th>Nome</th>
-          <th>Apelido</th>
-          <th>Data de nacemento</th>
           <th>Correo</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
           <th>Provincia</th>
-          <th>Activo</th>
-          <th>Tipo de conta</th>
           <th>Accións</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(u, index) in paciente" :key="index">
           <td>{{ index + 1 }}</td>
-          <td style="text-align: center;">{{ u.dni }}</td>
+          <td style="text-align: center;">{{ u.dnipac }}</td>
           <td>{{ u.nome }}</td>
-          <td>{{ u.apelido }}</td>
-          <td>{{ u.DataNacemento }}</td>
-          <td>{{ u.correo }}</td>
-          <td>{{ u.direccion }}</td>
-          <td>{{ u.telefono }}</td>
-          <td>{{ u.provincia }}</td>
-          <td style="text-align: center;">{{ u.activo ? "✅" : "❌" }}</td>
-          <td>{{ u.tipoCuenta }}</td>
+          <td>{{ u.mialpac }}</td>
+          <td>{{ u.propac }}</td>
           <td style="text-align: center;">
             <button @click="editarPaciente(index)" title="Editar">✏️</button>
             <button @click="eliminarPaciente(index)" title="Eliminar">🗑️</button>
@@ -168,6 +134,7 @@
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
 import {obtenerMunicipios, obtenerProvincias } from "../api/municipios"
+import {savePaciente} from "../api/pacientes.js"
 
 const provincias = ref([])
 const municipios = ref([])
@@ -175,42 +142,70 @@ const municipios = ref([])
 const paciente = ref([])  //almacena la lista de paciente e os seus cambios
 
 const novoPaciente = reactive({
-  dni: "",
-  nome: "",
-  apelido: "",
-  DataNacimiento: "",
-  correo: "",
-  direccion: "",
-  telefono:"",
-  provincia: "",
-  municipio: "",
-  activo: false,
-  tipoCuenta: ""
+  dnipac: "",
+  nomepac: "",
+  apelpac: "",
+  nacipac: "",
+  mialpac: "",
+  movilpac:"",
+  dirpac: "",
+  propac: "",
+  munipac: "",
 })
+
+onMounted(async () => {
+  provincias.value = await obtenerProvincias();
+  //pacientes.value = await getPacientes(); //carga os pacientes desde o backend
+  
+});
 
 /// Zona de ciclo de vida
 
 onMounted(async () => {       //sempre se cargan estos paciente de exemplo ao iniciar o componente
   paciente.value = [
-    { dni: "A000000C", nome: "Soldaduras SL", correo: "soldadura@email.com", provincia: "A Coruña", activo: true, tipoCuenta: "empresa" },
-    { dni: "0000000C", nome: "María Pérez", correo: "maria@email.com", provincia: "Lugo", activo: false, tipoCuenta: "particular" },
-    { dni: "B1234567D", nome: "Xosé López", correo: "xose@email.com", provincia: "Ourense", activo: true, tipoCuenta: "particular" },
-    { dni: "C9876543E", nome: "Construcións Modernas", correo: "construcion@email.com", provincia: "Pontevedra", activo: true, tipoCuenta: "empresa" }
+    { dni: "A000000C", nome: "Soldaduras SL", correo: "soldadura@email.com", provincia: "A Coruña"},
+    { dni: "0000000C", nome: "María Pérez", correo: "maria@email.com", provincia: "Lugo"},
+    { dni: "B1234567D", nome: "Xosé López", correo: "xose@email.com", provincia: "Ourense"},
+    { dni: "C9876543E", nome: "Construcións Modernas", correo: "construcion@email.com", provincia: "Pontevedra"}
   ]
 
   provincias.value = await obtenerProvincias()  //carga as provincias desde o backend
 })
 
 async function cargarMunicipios() {
-  if (novoPaciente.provincia === "") {
+  if (novoPaciente.propac === "") {
     municipios.value = [];
     return;
   }
   
-  municipios.value = await obtenerMunicipios(novoPaciente.provincia);
+  municipios.value = await obtenerMunicipios(novoPaciente.propac);
 }
 
 /// Zona de métodos ou funcións
+
+async function guardarPaciente() {
+  try {
+    const provincia = provincias.value.find(
+      p => p.nm === novoPaciente.propac
+    );
+
+    const municipio = municipios.value.find(
+      m => m.nm === novoPaciente.munipac
+    );
+
+    novoPaciente.propac = provincia.nm;
+    novoPaciente.munipac = municipio.nm;
+
+    const pacienteGuardado = await savePaciente(novoPaciente);
+    paciente.value.push(pacienteGuardado);
+    console.log("Paciente gardado correctamente");
+    obtenerPacientes();
+  } catch (error) {
+    console.error("Erro ao gardar o paciente:", error);
+  }
+}
+
+
 
 function gardarPaciente() {
   if (!validarDni() || !validarDni2()) {
@@ -219,7 +214,7 @@ function gardarPaciente() {
     return;
   }
   paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
-  Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", municipio: "", activo: false, tipoCuenta: "", telefono: "", DataNacimiento: "" }) //reinicia o formulario
+  // Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", municipio: "", telefono: "", DataNacimiento: "" }) //reinicia o formulario
 }
 
 function eliminarPaciente(index) {
@@ -236,19 +231,19 @@ function editarPaciente(index) {
 
 function validarDni() {
   const dniregex = /^[0-9]{8}[A-Z]$/; // Expresión regular para validar el formato del DNI
-  return dniregex.test(novoPaciente.dni.toUpperCase());
+  return dniregex.test(novoPaciente.dnipac.toUpperCase());
 }
 
 function validarDni2() {
   const dniarray = ['T', 'R', 'W', 'A', 'G', 'M', 'Y', 'F', 'P', 'D', 'X', 'B', 'N', 'J', 'Z', 'S', 'Q', 'V', 'H', 'L', 'C', 'K', 'E'];
-  const numerosDni = novoPaciente.dni.slice(0, 8);
-  const letraDni = novoPaciente.dni.slice(8, 9);
+  const numerosDni = novoPaciente.dnipac.slice(0, 8);
+  const letraDni = novoPaciente.dnipac.slice(8, 9);
   return dniarray[numerosDni % 23] === letraDni.toUpperCase();
 }
 
 function corrixirNome() {
-  if (novoPaciente.nome.length > 0) {
-    novoPaciente.nome = novoPaciente.nome
+  if (novoPaciente.nomepac.length > 0) {
+    novoPaciente.nomepac = novoPaciente.nomepac
     .trim()
     .split(/\s+/)
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -257,8 +252,8 @@ function corrixirNome() {
 }
 
 function corrixirApelido() {
-  if (novoPaciente.apelido.length > 0) {
-    novoPaciente.apelido = novoPaciente.apelido
+  if (novoPaciente.apelpac.length > 0) {
+    novoPaciente.apelpac = novoPaciente.apelpac
     .trim()
     .split(/\s+/)
     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -268,8 +263,8 @@ function corrixirApelido() {
 
 function validarTelf() {
   const telfRegex = /^[6|7]\d{8}$/;
-  if (novoPaciente.telefono != "") {
-	  return telfRegex.test(novoPaciente.telefono.trim());
+  if (novoPaciente.movilpac != "") {
+	  return telfRegex.test(novoPaciente.movilpac.trim());
   }
 }
 
