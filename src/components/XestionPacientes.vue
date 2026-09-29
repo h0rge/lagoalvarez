@@ -1,7 +1,7 @@
 <template>
   <div class="xestion-paciente">
     <h4>👥 Xestión de paciente</h4>
-    <form @submit.prevent="gardarPaciente">
+    <form @submit.prevent="guardarPaciente">
       <div class="fila">
         <div class="campo campo-dni">
           <label>DNI/CIF:</label>
@@ -162,12 +162,7 @@ onMounted(async () => {
 /// Zona de ciclo de vida
 
 onMounted(async () => {       //sempre se cargan estos paciente de exemplo ao iniciar o componente
-  paciente.value = [
-    { dni: "A000000C", nome: "Soldaduras SL", correo: "soldadura@email.com", provincia: "A Coruña"},
-    { dni: "0000000C", nome: "María Pérez", correo: "maria@email.com", provincia: "Lugo"},
-    { dni: "B1234567D", nome: "Xosé López", correo: "xose@email.com", provincia: "Ourense"},
-    { dni: "C9876543E", nome: "Construcións Modernas", correo: "construcion@email.com", provincia: "Pontevedra"}
-  ]
+  paciente.value = []
 
   provincias.value = await obtenerProvincias()  //carga as provincias desde o backend
 })
@@ -206,7 +201,7 @@ async function guardarPaciente() {
 }
 
 
-
+/*
 function gardarPaciente() {
   if (!validarDni() || !validarDni2()) {
     return;
@@ -216,7 +211,7 @@ function gardarPaciente() {
   paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
   // Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", municipio: "", telefono: "", DataNacimiento: "" }) //reinicia o formulario
 }
-
+*/
 function eliminarPaciente(index) {
   paciente.value.splice(index, 1);   //elimina o paciente da lista
 }
