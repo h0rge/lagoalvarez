@@ -73,7 +73,7 @@
             <option 
               v-for="provincia in provincias" 
               :key="provincia.id" 
-              :value="provincia.id"
+              :value="provincia.nm"
           >
               {{ provincia.nm }}
             </option>
@@ -88,7 +88,7 @@
             <option 
             v-for="municipio in municipios" 
             :key="municipio.id" 
-            :value="municipio.id"
+            :value="municipio.nm"
           >
               {{ municipio.nm }}
             </option>
@@ -99,12 +99,13 @@
         Gardar
       </button>
     </form>
-    <h4>📋 Listaxe de paciente</h4>
+    <h4>📋 Listaxe de pacientes</h4>
     <table v-if="pacientes.length > 0">
       <thead>
         <tr>
           <th>#</th>
           <th>DNI/CIF</th>
+          <th>Apelidos</th>
           <th>Nome</th>
           <th>Correo</th>
           <th>Provincia</th>
@@ -115,6 +116,7 @@
         <tr v-for="(u, index) in pacientes" :key="index">
           <td>{{ index + 1 }}</td>
           <td style="text-align: center;">{{ u.dnipac }}</td>
+          <td>{{ u.apelpac }}</td>
           <td>{{ u.nomepac }}</td>
           <td>{{ u.mailpac }}</td>
           <td>{{ u.propac }}</td>
@@ -149,8 +151,8 @@ const novoPaciente = reactive({
   movilpac:"",
   dirpac: "",
   propac: "",
-  munipac: "",
-})
+  munipac: ""
+});
 
 
 
@@ -166,17 +168,13 @@ async function cargarMunicipios() {
     municipios.value = [];
     return;
   }
-
-  municipios.value = await obtenerMunicipios(novoPaciente.propac); // Obtén el último carácter de la provincia seleccionada y pásalo a la función
-  /*
+  
     const provincia = provincias.value.find(
-      provincia => provincia.nm === novoPaciente.propac
+      p => p.nm === novoPaciente.propac
     );
   
-    municipios.value = provincia
-      ? await obtenerMunicipios(provincia.id)
-      : [];
-  */
+    municipios.value = await obtenerMunicipios(provincia.id)
+  
 }
 
 /// Zona de métodos ou funcións
@@ -188,7 +186,7 @@ async function guardarPaciente() {
     return;
   }
   try {
-    const provincia = provincias.value.find(
+    /* const provincia = provincias.value.find(
       p => p.id === novoPaciente.propac
     );
 
@@ -198,11 +196,12 @@ async function guardarPaciente() {
 
     novoPaciente.propac = provincia.nm;
     novoPaciente.munipac = municipio.nm;
-
+    */
     const pacienteGuardado = await savePaciente(novoPaciente);
     pacientes.value.push(pacienteGuardado);
     console.log("Paciente gardado correctamente");
     getPacientes();
+    Object.assign(novoPaciente, { dnipac: "", nomepac: "", apelpac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" })
   } catch (error) {
     console.error("Erro ao gardar o paciente:", error);
   }
@@ -217,7 +216,7 @@ function gardarPaciente() {
     return;
   }
   paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
-  // Object.assign(novoPaciente, { dni: "", nome: "", correo: "", provincia: "", municipio: "", telefono: "", DataNacimiento: "" }) //reinicia o formulario
+  // Object.assign(novoPaciente, { dnipac: "", nomepac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" }) //reinicia o formulario
 }
 */
 function eliminarPaciente(index) {
