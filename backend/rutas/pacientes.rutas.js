@@ -3,6 +3,42 @@ import Paciente from "../modelos/Paciente.js";
 
 const router = express.Router();
 
+
+// Obtener todos
+router.get("/", async (req, res) => {
+    try {
+        const pacientes = await Paciente.find();
+
+        res.json(pacientes);
+
+    } catch (error) {
+
+        res.status(500).json({
+            message: ("Error al obtener pacientes: ", error)
+        });
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Crear
 
 router.post ("/", async (req, res) => {

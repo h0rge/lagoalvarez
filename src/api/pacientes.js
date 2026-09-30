@@ -7,7 +7,13 @@ const API_URL = "http://localhost:3000/api";
 
 //Guardar paciente
 export async function savePaciente(paciente) {
-    const res = await axios.post(`${API_URL}/pacientes`, paciente); /*en doctores cambiamos pacientes por doctores (duh) */
+    const res = await axios.post(`${API_URL}/pacientes`, paciente); // en doctores cambiamos pacientes por doctores (duh)
+    return res.data;
+}
+
+//Obtener pacientes (como el de guardar paciente, pero cambias get por post y no le pasas paciente)
+export async function getPacientes() {
+    const res = await axios.get(`${API_URL}/pacientes`);
     return res.data;
 }
 

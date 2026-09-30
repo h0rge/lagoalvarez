@@ -12,9 +12,9 @@ export async function obtenerProvincias() {
 
 // Obtener todos los municipios de una provincia
 export async function obtenerMunicipios(idProvincia) {
-    const respuesta = await axios.get(URL)
+    const respuesta = await axios.get(URL);
 
-    const municipios = respuesta.data.municipios
+    const municipios = respuesta.data.municipios;
 
 
     return municipios.filter(

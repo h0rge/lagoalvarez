@@ -73,7 +73,7 @@
             <option 
               v-for="provincia in provincias" 
               :key="provincia.id" 
-              :value="provincia.nm"
+              :value="provincia.id"
           >
               {{ provincia.nm }}
             </option>
@@ -88,7 +88,7 @@
             <option 
             v-for="municipio in municipios" 
             :key="municipio.id" 
-            :value="municipio.nm"
+            :value="municipio.id"
           >
               {{ municipio.nm }}
             </option>
@@ -100,7 +100,7 @@
       </button>
     </form>
     <h4>📋 Listaxe de paciente</h4>
-    <table v-if="paciente.length > 0">
+    <table v-if="pacientes.length > 0">
       <thead>
         <tr>
           <th>#</th>
@@ -112,11 +112,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(u, index) in paciente" :key="index">
+        <tr v-for="(u, index) in pacientes" :key="index">
           <td>{{ index + 1 }}</td>
           <td style="text-align: center;">{{ u.dnipac }}</td>
-          <td>{{ u.nome }}</td>
-          <td>{{ u.mialpac }}</td>
+          <td>{{ u.nomepac }}</td>
+          <td>{{ u.mailpac }}</td>
           <td>{{ u.propac }}</td>
           <td style="text-align: center;">
             <button @click="editarPaciente(index)" title="Editar">✏️</button>
@@ -133,38 +133,32 @@
 <script setup>
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
-import {obtenerMunicipios, obtenerProvincias } from "../api/municipios"
-import {savePaciente} from "../api/pacientes.js"
+import {obtenerMunicipios, obtenerProvincias } from "../api/municipios.js"
+import {savePaciente, getPacientes} from "../api/pacientes.js"
 
 const provincias = ref([])
 const municipios = ref([])
-
-const paciente = ref([])  //almacena la lista de paciente e os seus cambios
+const pacientes = ref([])  //almacena la lista de paciente e os seus cambios
 
 const novoPaciente = reactive({
   dnipac: "",
   nomepac: "",
   apelpac: "",
   nacipac: "",
-  mialpac: "",
+  mailpac: "",
   movilpac:"",
   dirpac: "",
   propac: "",
   munipac: "",
 })
 
-onMounted(async () => {
-  provincias.value = await obtenerProvincias();
-  //pacientes.value = await getPacientes(); //carga os pacientes desde o backend
-  
-});
+
 
 /// Zona de ciclo de vida
 
-onMounted(async () => {       //sempre se cargan estos paciente de exemplo ao iniciar o componente
-  paciente.value = []
-
-  provincias.value = await obtenerProvincias()  //carga as provincias desde o backend
+onMounted(async () => {
+  provincias.value = await obtenerProvincias();
+  pacientes.value = await getPacientes(); //carga os pacientes desde o backend
 })
 
 async function cargarMunicipios() {
@@ -172,29 +166,43 @@ async function cargarMunicipios() {
     municipios.value = [];
     return;
   }
+
+  municipios.value = await obtenerMunicipios(novoPaciente.propac); // Obtén el último carácter de la provincia seleccionada y pásalo a la función
+  /*
+    const provincia = provincias.value.find(
+      provincia => provincia.nm === novoPaciente.propac
+    );
   
-  municipios.value = await obtenerMunicipios(novoPaciente.propac);
+    municipios.value = provincia
+      ? await obtenerMunicipios(provincia.id)
+      : [];
+  */
 }
 
 /// Zona de métodos ou funcións
 
 async function guardarPaciente() {
+  if (!validarDni() || !validarDni2()) {
+    return;
+  } else if (!validarTelf()) {
+    return;
+  }
   try {
     const provincia = provincias.value.find(
-      p => p.nm === novoPaciente.propac
+      p => p.id === novoPaciente.propac
     );
 
     const municipio = municipios.value.find(
-      m => m.nm === novoPaciente.munipac
+      m => m.id === novoPaciente.munipac
     );
 
     novoPaciente.propac = provincia.nm;
     novoPaciente.munipac = municipio.nm;
 
     const pacienteGuardado = await savePaciente(novoPaciente);
-    paciente.value.push(pacienteGuardado);
+    pacientes.value.push(pacienteGuardado);
     console.log("Paciente gardado correctamente");
-    obtenerPacientes();
+    getPacientes();
   } catch (error) {
     console.error("Erro ao gardar o paciente:", error);
   }
@@ -213,11 +221,11 @@ function gardarPaciente() {
 }
 */
 function eliminarPaciente(index) {
-  paciente.value.splice(index, 1);   //elimina o paciente da lista
+  pacientes.value.splice(index, 1);   //elimina o paciente da lista
 }
 
 function editarPaciente(index) {
-  const paciente = paciente.value[index];   //carga os datos do paciente elixido no formulario
+  const paciente = pacientes.value[index];   //carga os datos do paciente elixido no formulario
   Object.assign(novoPaciente, paciente);  // carga os datos do paciente no formulario recorda v-model do formulario é novoPaciente
 }
 
