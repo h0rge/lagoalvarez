@@ -62,4 +62,30 @@ router.delete("/:dnipac", async (req, res) => {
         });
     }
 });
+
+router.put("/:dnipac", async (req, res) => {
+    try {
+        const paciente = await Paciente.findOneAndUpdate(
+            { dnipac: req.params.dnipac },
+            req.body,
+            { new: true }
+        );
+
+        if (!paciente) {
+            return res.status(404).json({
+                mensaje: "Paciente no encontrado"
+            });
+        }
+
+        res.json({paciente});
+
+
+    } catch (error) {
+        
+        res.status(500).json({
+            mensaje: ("Error al eliminar paciente", error)
+        });
+    }
+});
+// O export
 export default router;

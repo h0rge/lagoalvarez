@@ -5,33 +5,21 @@
       <div class="fila">
         <div class="campo campo-dni">
           <label>DNI/CIF:</label>
-          <input v-model="novoPaciente.dnipac" 
-            v-on:input="novoPaciente.dnipac = novoPaciente.dnipac.toUpperCase()" 
+          <input v-model="novoPaciente.dnipac" v-on:input="novoPaciente.dnipac = novoPaciente.dnipac.toUpperCase()"
             type="text" required style="text-align: center;" />
         </div>
-        <div
-          v-if="novoPaciente.dnipac !== '' && (!validarDni() || !validarDni2())"
-          class="error-message"
-          >
+        <div v-if="novoPaciente.dnipac !== '' && (!validarDni() || !validarDni2())" class="error-message">
           <p class="error">O DNI/CIF non é válido</p>
         </div>
         <div class="campo campo-nome">
           <label>Nome:</label>
-          <input 
-            v-model="novoPaciente.nomepac" 
-            type="text"
-            @keyup.enter="corrixirNome()"
-            @blur="corrixirNome()"
+          <input v-model="novoPaciente.nomepac" type="text" @keyup.enter="corrixirNome()" @blur="corrixirNome()"
             required />
         </div>
         <div class="campo campo-apelido">
           <label>Apelido:</label>
-          <input 
-          v-model="novoPaciente.apelpac" 
-          type="text" 
-          @keyup.enter="corrixirApelido()"
-          @blur="corrixirApelido()"
-          required />
+          <input v-model="novoPaciente.apelpac" type="text" @keyup.enter="corrixirApelido()" @blur="corrixirApelido()"
+            required />
         </div>
       </div>
       <div class="fila">
@@ -51,51 +39,45 @@
       <div class="fila">
         <div class="campo campo-telefono">
           <label>Telefono:</label>
-          <input 
-          v-model="novoPaciente.movilpac"
-          type="text"
-          required />
+          <input v-model="novoPaciente.movilpac" type="text" required />
         </div>
-        <div
-	        v-if="novoPaciente.movilpac !== '' && (!validarTelf())"
-	        class="error-message"
-        >
-        <p class="error">O teléfono non é válido</p>
-      </div>
+        <div v-if="novoPaciente.movilpac !== '' && (!validarTelf())" class="error-message">
+          <p class="error">O teléfono non é válido</p>
+        </div>
         <div class="campo campo-provincia">
           <label>Provincia:</label>
-          <select 
-            id="provincia"
-            v-model="novoPaciente.propac" 
-            @change="cargarMunicipios()"
-            required>
+          <select id="provincia" v-model="novoPaciente.propac" @change="cargarMunicipios()" required>
             <option value="">Selecciona unha provincia</option>
-            <option 
-              v-for="provincia in provincias" 
-              :key="provincia.id" 
-              :value="provincia.nm"
-          >
+            <option v-for="provincia in provincias" :key="provincia.id" :value="provincia.nm">
               {{ provincia.nm }}
             </option>
           </select>
         </div>
         <div class="campo campo-municipio">
           <label>Municipio:</label>
-          <select 
-          id="municipio"
-          v-model="novoPaciente.munipac" required>
+          <select id="municipio" v-model="novoPaciente.munipac" required>
             <option value="">Selecciona un municipio</option>
-            <option 
-            v-for="municipio in municipios" 
-            :key="municipio.id" 
-            :value="municipio.nm"
-          >
+            <option v-for="municipio in municipios" :key="municipio.id" :value="municipio.nm">
               {{ municipio.nm }}
             </option>
           </select>
         </div>
       </div>
-      <button type="submit" class="btn-guardar" :disabled="novoPaciente.dnipac === '' || novoPaciente.nomepac === ''">
+      <div class="campo-condicions">
+        <label>
+          <input v-model="novoPaciente.lodpac" type="checkbox" /> Aceptar a
+          <a :href="$router.resolve({ name: 'PoliticaPrivacidad' }).href" target="_blank" rel="noopener noreferrer">
+            Política de privacidade e confidencialidade
+          </a>
+        </label>
+      </div>
+      <button type="submit" class="btn-guardar" :disabled="
+        novoPaciente.dnipac === '' ||
+        novoPaciente.nomepac === '' ||
+        novoPaciente.apelpac === '' ||
+        novoPaciente.movilpac === '' ||
+        !novoPaciente.lodpac
+        ">
         Gardar
       </button>
     </form>
@@ -121,7 +103,7 @@
           <td>{{ u.mailpac }}</td>
           <td>{{ u.propac }}</td>
           <td style="text-align: center;">
-            <button @click="editarPaciente(index)" title="Editar">✏️</button>
+            <button @click="editarUsuario(index)" title="Editar">✏️</button>
             <button @click="eliminarPaciente(index)" title="Eliminar">🗑️</button>
           </td>
         </tr>
@@ -135,12 +117,14 @@
 <script setup>
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
-import {obtenerMunicipios, obtenerProvincias } from "../api/municipios.js"
-import {savePaciente, getPacientes, deletePaciente} from "../api/pacientes.js"
+import { obtenerMunicipios, obtenerProvincias } from "../api/municipios.js"
+import { savePaciente, getPacientes, deletePaciente, modifyPaciente } from "../api/pacientes.js"
 
 const provincias = ref([])
 const municipios = ref([])
+
 const pacientes = ref([])  //almacena la lista de paciente e os seus cambios
+const editando = ref(false);
 
 const novoPaciente = reactive({
   dnipac: "",
@@ -148,10 +132,11 @@ const novoPaciente = reactive({
   apelpac: "",
   nacipac: "",
   mailpac: "",
-  movilpac:"",
+  movilpac: "",
   dirpac: "",
   propac: "",
-  munipac: ""
+  munipac: "",
+  lodpac: false //campo para acaptacion de lod
 });
 
 
@@ -168,16 +153,33 @@ async function cargarMunicipios() {
     municipios.value = [];
     return;
   }
-  
-    const provincia = provincias.value.find(
-      p => p.nm === novoPaciente.propac
-    );
-  
-    municipios.value = await obtenerMunicipios(provincia.id)
-  
+
+  const provincia = provincias.value.find(
+    p => p.nm === novoPaciente.propac
+  );
+
+  municipios.value = await obtenerMunicipios(provincia.id)
+
 }
 
 /// Zona de métodos ou funcións
+
+async function clear() {
+  Object.assign(novoPaciente, {
+    dnipac: "",
+    nomepac: "",
+    apelpac: "",
+    mailpac: "",
+    propac: "",
+    munipac: "",
+    movilpac: "",
+    dirpac: "",
+    nacipac: "",
+    lodpac: false
+  });
+  municipios.value = [];
+}
+
 
 async function guardarPaciente() {
   if (!validarDni() || !validarDni2()) {
@@ -186,23 +188,42 @@ async function guardarPaciente() {
     return;
   }
   try {
-    /* const provincia = provincias.value.find(
-      p => p.id === novoPaciente.propac
-    );
+    if (editando.value) {
+      const pacienteModificado = await modifyPaciente(
+        novoPaciente.dnipac,
+        novoPaciente
+      );
 
-    const municipio = municipios.value.find(
-      m => m.id === novoPaciente.munipac
-    );
+      const index = pacientes.value.findIndex(
+        (p) => p.dnipac === novoPaciente.dnipac
+      );
 
-    novoPaciente.propac = provincia.nm;
-    novoPaciente.munipac = municipio.nm;
-    */
+      if (index !== -1) {
+        pacientes.value[index] = pacienteModificado;
+      }
+
+      console.log("Paciente modificado correctamente");
+      await clear();
+    } else {
+      const pacienteGuardado = await savePaciente(novoPaciente);
+      pacientes.value.push(pacienteGuardado);
+
+      console.log("Paciente gardado con éxito");
+
+      await clear();
+      
+    }
+    
+    editando.value = false;
+
+    /*
     const pacienteGuardado = await savePaciente(novoPaciente);
     pacientes.value.push(pacienteGuardado);
     console.log("Paciente gardado correctamente");
     getPacientes();
     Object.assign(novoPaciente, { dnipac: "", nomepac: "", apelpac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" })
     cargarMunicipios(); // Reinicia a lista de municipios ao gardar un paciente
+    */
   } catch (error) {
     console.error("Erro ao gardar o paciente:", error);
   }
@@ -232,9 +253,14 @@ async function eliminarPaciente(index) {
   pacientes.value.splice(index, 1);   //elimina o paciente da lista
 }
 
-function editarPaciente(index) {
+async function editarUsuario(index) {
   const paciente = pacientes.value[index];   //carga os datos do paciente elixido no formulario
   Object.assign(novoPaciente, paciente);  // carga os datos do paciente no formulario recorda v-model do formulario é novoPaciente
+  //evitar que se cargue el _id de mongoDB en el formulario
+  delete novoPaciente._id;
+  editando.value = true;
+  //cargar los municipios
+  await cargarMunicipios();
 }
 
 //===================================================================================
@@ -255,40 +281,39 @@ function validarDni2() {
 function corrixirNome() {
   if (novoPaciente.nomepac.length > 0) {
     novoPaciente.nomepac = novoPaciente.nomepac
-    .trim()
-    .split(/\s+/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+      .trim()
+      .split(/\s+/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   }
 }
 
 function corrixirApelido() {
   if (novoPaciente.apelpac.length > 0) {
     novoPaciente.apelpac = novoPaciente.apelpac
-    .trim()
-    .split(/\s+/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+      .trim()
+      .split(/\s+/)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   }
 }
 
 function validarTelf() {
   const telfRegex = /^[6|7]\d{8}$/;
   if (novoPaciente.movilpac != "") {
-	  return telfRegex.test(novoPaciente.movilpac.trim());
+    return telfRegex.test(novoPaciente.movilpac.trim());
   }
 }
 
 </script>
 
 <style scoped>
-
-
 .error {
   color: red;
   font-size: 0.9rem;
   margin-top: 0.2rem;
 }
+
 .xestion-paciente {
   width: 100%;
   /* opcional para que no crezca demasiado en pantallas muy grandes */
@@ -389,7 +414,8 @@ form {
   background-color: #057559;
   color: white;
   border: 3px solid #00aa1c;
-  border-image: linear-gradient(45deg, #00aa1c, #0000ff) 1; /* Define los dos colores y el ángulo */
+  border-image: linear-gradient(45deg, #00aa1c, #0000ff) 1;
+  /* Define los dos colores y el ángulo */
   padding: 20px;
   padding: 0.4rem 1.5rem;
   border-radius: 0px;
@@ -401,6 +427,18 @@ form {
 .btn-guardar:hover {
   background-color: #637a76;
   border-radius: 0px;
+}
+
+.btn-guardar:disabled {
+  background-color: #e0e0e0;
+  color: #999;
+  border-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7
+}
+
+.btn-guardar:disabled:hover {
+  background-color: #e0e0e0;
 }
 
 .button {
