@@ -19,26 +19,6 @@ router.get("/", async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Crear
 
 router.post ("/", async (req, res) => {
@@ -60,4 +40,26 @@ router.post ("/", async (req, res) => {
     }
 });
 
+router.delete("/:dnipac", async (req, res) => {
+    try {
+        const paciente = await Paciente.findOneAndDelete({
+            dnipac: req.params.dnipac
+        });
+
+        if (!paciente) {
+            return res.status(404).json({
+                mensaje: "Paciente no encontrado"
+            });
+        }
+
+        res.json({mensaje:"paciente eliminado"});
+
+
+    } catch (error) {
+        console.error("Error al eliminar paciente:", error);
+        res.status(500).json({
+            mensaje: ("Error al eliminar paciente", error)
+        });
+    }
+});
 export default router;

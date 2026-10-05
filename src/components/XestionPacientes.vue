@@ -114,7 +114,7 @@
       </thead>
       <tbody>
         <tr v-for="(u, index) in pacientes" :key="index">
-          <td>{{ index + 1 }}</td>
+          <td style="text-align: center;">{{ index + 1 }}</td>
           <td style="text-align: center;">{{ u.dnipac }}</td>
           <td>{{ u.apelpac }}</td>
           <td>{{ u.nomepac }}</td>
@@ -136,7 +136,7 @@
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
 import {obtenerMunicipios, obtenerProvincias } from "../api/municipios.js"
-import {savePaciente, getPacientes} from "../api/pacientes.js"
+import {savePaciente, getPacientes, deletePaciente} from "../api/pacientes.js"
 
 const provincias = ref([])
 const municipios = ref([])
@@ -202,6 +202,7 @@ async function guardarPaciente() {
     console.log("Paciente gardado correctamente");
     getPacientes();
     Object.assign(novoPaciente, { dnipac: "", nomepac: "", apelpac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" })
+    cargarMunicipios(); // Reinicia a lista de municipios ao gardar un paciente
   } catch (error) {
     console.error("Erro ao gardar o paciente:", error);
   }
@@ -219,7 +220,15 @@ function gardarPaciente() {
   // Object.assign(novoPaciente, { dnipac: "", nomepac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" }) //reinicia o formulario
 }
 */
-function eliminarPaciente(index) {
+async function eliminarPaciente(index) {
+  try {
+    await deletePaciente(pacientes.value[index].dnipac);
+    pacientes.value.splice(index, 1)
+    console.log("Paciente eliminado correctamente");
+    getPacientes();
+  } catch (error) {
+    console.error("Erro ao eliminar o paciente:", error);
+  }
   pacientes.value.splice(index, 1);   //elimina o paciente da lista
 }
 

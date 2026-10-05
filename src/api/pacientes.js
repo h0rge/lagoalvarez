@@ -21,3 +21,8 @@ export async function obtenerPacientes() {
     const res = await axios.get(API_URL);
     return res.data;
 }
+
+export async function deletePaciente(dni) {
+    const res = await axios.delete(`${API_URL}/pacientes/${dni}`);
+    return res.data;
+}
