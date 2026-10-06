@@ -6,6 +6,7 @@ import "dotenv/config"  //para poder usar variables de entorno
 import mongoose from "mongoose"; //importa módulo de conexion a MongoDB
 
 import pacientesRutas from './rutas/pacientes.rutas.js';
+import doctoresRutas from './rutas/doctores.rutas.js';
 //importa el modelo de paciente y las funciones de la api de pacientes
 
 //creamos la aplicacion express
@@ -13,6 +14,7 @@ const app = express();
 app.use(cors());
 app.use(express.json()); //para poder recibir json en el body de las peticiones
 app.use(`/api/pacientes`, pacientesRutas); //usa las rutas de pacientes
+app.use(`/api/doctores`, doctoresRutas);
 // USA EL PUERTO DEFINIDO EN LAS VARIABLES DE ENTORNO, SI NO COGE 3000
 const PORT = process.env.PORT || 3000;
 
@@ -32,6 +34,20 @@ app.get('/api/municipios', (req, res) => {
 
     const datosJson = JSON.parse(datos);
 
+    res.json(datosJson);
+
+});
+
+app.get('/api/especialidades', (req, res) => {
+    console.log("peticion recibida");
+
+    // Leer el fichero JSON
+    const datos = fs.readFileSync("./backend/data/especialidades.json", "utf8");
+
+    // Convertimos el texto JSON en un objeto JavaSctipt
+    const datosJson = JSON.parse(datos);
+
+    //Enviamos los datos como respuesta al cliente
     res.json(datosJson);
 
 });

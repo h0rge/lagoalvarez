@@ -11,6 +11,8 @@
         <div v-if="novoPaciente.dnipac !== '' && (!validarDni() || !validarDni2())" class="error-message">
           <p class="error">O DNI/CIF non é válido</p>
         </div>
+        <button type="button" @click="limpiaFormpac">Limpar</button>
+        <button type="button" @click="buscarPaciente">Buscar</button>
         <div class="campo campo-nome">
           <label>Nome:</label>
           <input v-model="novoPaciente.nomepac" type="text" @keyup.enter="corrixirNome()" @blur="corrixirNome()"
@@ -118,7 +120,13 @@
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
 import { obtenerMunicipios, obtenerProvincias } from "../api/municipios.js"
-import { savePaciente, getPacientes, deletePaciente, modifyPaciente } from "../api/pacientes.js"
+import {
+  savePaciente,
+  getPacientes,
+  deletePaciente,
+  modifyPaciente,
+  getPacienteByDni
+} from "../api/pacientes.js"
 
 const provincias = ref([])
 const municipios = ref([])
@@ -207,9 +215,9 @@ async function guardarPaciente() {
     } else {
       const pacienteGuardado = await savePaciente(novoPaciente);
       pacientes.value.push(pacienteGuardado);
-
+      
       console.log("Paciente gardado con éxito");
-
+      
       await clear();
       
     }
@@ -230,21 +238,22 @@ async function guardarPaciente() {
 }
 
 
+
 /*
 function gardarPaciente() {
   if (!validarDni() || !validarDni2()) {
     return;
-  } else if (!validarTelf()) {
-    return;
-  }
-  paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
-  // Object.assign(novoPaciente, { dnipac: "", nomepac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" }) //reinicia o formulario
-}
-*/
-async function eliminarPaciente(index) {
-  try {
-    await deletePaciente(pacientes.value[index].dnipac);
-    pacientes.value.splice(index, 1)
+    } else if (!validarTelf()) {
+      return;
+      }
+      paciente.value.push({ ...novoPaciente })  //engade o novo paciente á lista (copia do obxecto)
+      // Object.assign(novoPaciente, { dnipac: "", nomepac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" }) //reinicia o formulario
+      }
+      */
+     async function eliminarPaciente(index) {
+       try {
+         await deletePaciente(pacientes.value[index].dnipac);
+         pacientes.value.splice(index, 1)
     console.log("Paciente eliminado correctamente");
     getPacientes();
   } catch (error) {
@@ -261,6 +270,31 @@ async function editarUsuario(index) {
   editando.value = true;
   //cargar los municipios
   await cargarMunicipios();
+}
+
+async function buscarPaciente() {
+  try {
+    const dni = novoPaciente.dnipac.trim();
+
+    if (!dni) {
+      console.log("Introduce un DNI");
+      return;
+    }
+
+    const paciente = await getPacienteByDni(dni);
+
+    Object.assign(novoPaciente, paciente);
+    await cargarMunicipios();
+
+    console.log("Paciente encontrado:", paciente);
+
+  } catch (error) {
+    if (error.response?.status === 404) {
+      console.log("Paciente no encontrado");      
+    } else {
+      console.error("Error al buscar paciente: ", error)
+    }
+  }
 }
 
 //===================================================================================
@@ -281,7 +315,7 @@ function validarDni2() {
 function corrixirNome() {
   if (novoPaciente.nomepac.length > 0) {
     novoPaciente.nomepac = novoPaciente.nomepac
-      .trim()
+    .trim()
       .split(/\s+/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
@@ -291,19 +325,37 @@ function corrixirNome() {
 function corrixirApelido() {
   if (novoPaciente.apelpac.length > 0) {
     novoPaciente.apelpac = novoPaciente.apelpac
-      .trim()
+    .trim()
       .split(/\s+/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
+    }
+  }
+  
+  function validarTelf() {
+    const telfRegex = /^[6|7]\d{8}$/;
+    if (novoPaciente.movilpac != "") {
+      return telfRegex.test(novoPaciente.movilpac.trim());
   }
 }
 
-function validarTelf() {
-  const telfRegex = /^[6|7]\d{8}$/;
-  if (novoPaciente.movilpac != "") {
-    return telfRegex.test(novoPaciente.movilpac.trim());
-  }
+const limpiaFormpac = () => {
+  Object.assign(novoPaciente, {
+    dnipac: "",
+    nomepac: "",
+    apelpac: "",
+    nacipac: "",
+    mailpac: "",
+    movilpac: "",
+    dirpac: "",
+    propac: "",
+    munipac: "",
+    lodpac: false
+  });
+  municipios.value = [];
+  editando.value = false;
 }
+
 
 </script>
 
@@ -321,6 +373,7 @@ function validarTelf() {
   padding: 2rem;
   overflow: visible;
   border-radius: 2px;
+  flex-wrap: wrap;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   display: flex;

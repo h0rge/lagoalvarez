@@ -17,6 +17,11 @@ export async function getPacientes() {
     return res.data;
 }
 
+export async function getPacienteByDni(dni) {
+    const res = await axios.get(`${API_URL}/pacientes/${dni}`);
+    return res.data;
+}
+
 export async function obtenerPacientes() {
     const res = await axios.get(API_URL);
     return res.data;

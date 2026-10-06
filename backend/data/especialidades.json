@@ -1,0 +1,124 @@
+{
+  "especialidades": [
+    {
+      "id": 1,
+      "nm": "Medicina de Familia"
+    },
+    {
+      "id": 2,
+      "nm": "Medicina Interna"
+    },
+    {
+      "id": 3,
+      "nm": "Cardiología"
+    },
+    {
+      "id": 4,
+      "nm": "Dermatología"
+    },
+    {
+      "id": 5,
+      "nm": "Endocrinología y Nutrición"
+    },
+    {
+      "id": 6,
+      "nm": "Gastroenterología"
+    },
+    {
+      "id": 7,
+      "nm": "Ginecología y Obstetricia"
+    },
+    {
+      "id": 8,
+      "nm": "Hematología"
+    },
+    {
+      "id": 9,
+      "nm": "Nefrología"
+    },
+    {
+      "id": 10,
+      "nm": "Neumología"
+    },
+    {
+      "id": 11,
+      "nm": "Neurología"
+    },
+    {
+      "id": 12,
+      "nm": "Oftalmología"
+    },
+    {
+      "id": 13,
+      "nm": "Oncología"
+    },
+    {
+      "id": 14,
+      "nm": "Otorrinolaringología"
+    },
+    {
+      "id": 15,
+      "nm": "Pediatría"
+    },
+    {
+      "id": 16,
+      "nm": "Psiquiatría"
+    },
+    {
+      "id": 17,
+      "nm": "Traumatología y Cirugía Ortopédica"
+    },
+    {
+      "id": 18,
+      "nm": "Urología"
+    },
+    {
+      "id": 19,
+      "nm": "Cirugía General"
+    },
+    {
+      "id": 20,
+      "nm": "Cirugía Cardiovascular"
+    },
+    {
+      "id": 21,
+      "nm": "Cirugía Plástica"
+    },
+    {
+      "id": 22,
+      "nm": "Neurocirugía"
+    },
+    {
+      "id": 23,
+      "nm": "Reumatología"
+    },
+    {
+      "id": 24,
+      "nm": "Alergología"
+    },
+    {
+      "id": 25,
+      "nm": "Anestesiología y Reanimación"
+    },
+    {
+      "id": 26,
+      "nm": "Radiología"
+    },
+    {
+      "id": 27,
+      "nm": "Medicina Física y Rehabilitación"
+    },
+    {
+      "id": 28,
+      "nm": "Medicina Preventiva y Salud Pública"
+    },
+    {
+      "id": 29,
+      "nm": "Urgencias"
+    },
+    {
+      "id": 30,
+      "nm": "Geriatría"
+    }
+  ]
+}
