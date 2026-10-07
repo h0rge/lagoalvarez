@@ -1,6 +1,6 @@
 <template>
   <div class="xestion-paciente">
-    <h4>👥 Xestión de paciente</h4>
+    <h4>👥 Xestión de pacientes</h4>
     <form @submit.prevent="guardarPaciente">
       <div class="fila">
         <div class="campo campo-dni">

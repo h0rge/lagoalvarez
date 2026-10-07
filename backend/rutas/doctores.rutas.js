@@ -16,11 +16,34 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+
+router.get("/:id", async (req, res) => {
+  try {
+    const doctor = await Doctor.findOne({
+      _id: req.params.id,
+    });
+
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor no encontrado",
+      });
+    }
+
+    res.json(doctor);
+  } catch (error) {
+    res.status(500).json({
+      message: ("Error al obtener doctor: ", error),
+    });
+  }
+});
+
+
 // Obtener por id!! (no por DNI)
 router.get("/:id", async (req, res) => {
   try {
     const doctor = await Doctor.findOne({
-      dnipac: req.params.dni,
+      _id: req.params.id,
     });
 
     if (!doctor) {
@@ -42,12 +65,12 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const pacienteExistente = await Doctor.findOne({
-      dnipac: req.body.dnipac,
+      _id: req.body._id,
     });
 
     if (pacienteExistente) {
       return res.status(400).json({
-        message: "El doctor con este DNI ya existe",
+        message: "El doctor con este ID ya existe",
       });
     }
 
@@ -67,10 +90,10 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:dnipac", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const doctor = await Doctor.findOneAndDelete({
-      dnipac: req.params.dnipac,
+      _id: req.params.id,
     });
 
     if (!doctor) {

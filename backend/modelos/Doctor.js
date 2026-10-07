@@ -6,7 +6,7 @@ const DoctorSchema = new mongoose.Schema(
         nomedoc: { type: String, required: true },
         apeldoc: { type: String, required: true },
         coledoc: { type: String, required: true },
-        amildoc: { type: String, required: true },
+        maildoc: { type: String, required: true },
         movildoc: { type: String, required: false },
         espedoc: { type: String, required: true },
     },
