@@ -25,9 +25,10 @@
                 </div>
             </div>
             <div class="fila">
-                <div class="campo campo-data-nacimiento">
-                    <label>Data de nacemento:</label>
-                    <input v-model="novoDoctor.coledoc" type="date" required />
+                <div class="campo campo-colegiado">
+                    <label>Colegiado</label>
+                    <label for="">Si</label><input v-model="novoDoctor.coledoc" type="radio" name="colegiado" id="si" required />
+                    <label for="">No</label><input v-model="novoDoctor.coledoc" type="radio" name="colegiado" id="no">
                 </div>
                 <div class="campo campo-correo">
                     <label>Correo:</label>
@@ -119,8 +120,8 @@
     } from "../api/doctores.js"
     
     
-const doctores = ref([])  //almacena la lista de doctores e os seus cambios
 const especialidades = ref([])
+const doctores = ref([])  //almacena la lista de doctores e os seus cambios
 
 const novoDoctor = reactive({
   iddoc: "",
@@ -131,6 +132,17 @@ const novoDoctor = reactive({
   coledoc: "",
   espedoc: "",
 });
+
+/// Zona de ciclo de vida
+
+onMounted(async () => {
+    especialidades.value = await obtenerEspecialidades();
+})
+
+const especialidad = especialidades.value.find(
+    e => e.nm === novoDoctor.espedoc
+)
+
 
 // Funciones auxiliares
 function corrixirNome() {
