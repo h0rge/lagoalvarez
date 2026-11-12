@@ -64,11 +64,11 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const pacienteExistente = await Doctor.findOne({
+    const doctorExistente = await Doctor.findOne({
       _id: req.body._id,
     });
 
-    if (pacienteExistente) {
+    if (doctorExistente) {
       return res.status(400).json({
         message: "El doctor con este ID ya existe",
       });
@@ -78,9 +78,9 @@ router.post("/", async (req, res) => {
     console.log("Datos recibidos:", req.body);
     const doctor = new Doctor(req.body);
 
-    const nuevoPaciente = await doctor.save();
+    const nuevoDoctor = await doctor.save();
 
-    res.status(201).json(nuevoPaciente); //convierte json en string y lo envia al cliente
+    res.status(201).json(nuevoDoctor); //convierte json en string y lo envia al cliente
   } catch (error) {
     console.error("Error al crear doctor:", error);
 
@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const doctor = await Doctor.findOneAndDelete({
-      _id: req.params.id,
+      iddoc: req.params.id,
     });
 
     if (!doctor) {
@@ -111,10 +111,10 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:dnipac", async (req, res) => {
+router.put("/:iddoc", async (req, res) => {
   try {
     const doctor = await Doctor.findOneAndUpdate(
-      { dnipac: req.params.dnipac },
+      { iddoc: req.params.iddoc },
       req.body,
       { new: true },
     );

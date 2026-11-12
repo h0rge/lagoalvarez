@@ -9,6 +9,7 @@ const DoctorSchema = new mongoose.Schema(
         maildoc: { type: String, required: true },
         movildoc: { type: String, required: false },
         espedoc: { type: String, required: true },
+        loddoc: { type: Boolean, required: true }
     },
 
     {

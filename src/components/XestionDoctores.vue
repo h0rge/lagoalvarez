@@ -8,11 +8,8 @@
                     <input v-model="novoDoctor.iddoc" v-on:input="novoDoctor.iddoc = novoDoctor.iddoc.toUpperCase()"
                         type="text" required style="text-align: center;" />
                 </div>
-                <div v-if="novoDoctor.iddoc !== '' && (!validarDni() || !validarDni2())" class="error-message">
-                    <p class="error">O DNI/CIF non é válido</p>
-                </div>
-                <button type="button" @click="limpiaFormpac">Limpar</button>
-                <button type="button" @click="buscarPaciente">Buscar</button>
+                <button type="button" @click="limpiaFormdoc">✨</button>
+                <button type="button" @click="buscarDoctor">🔍</button>
                 <div class="campo campo-nome">
                     <label>Nome:</label>
                     <input v-model="novoDoctor.nomedoc" type="text" @keyup.enter="corrixirNome()" @blur="corrixirNome()"
@@ -27,22 +24,42 @@
             <div class="fila">
                 <div class="campo campo-colegiado">
                     <label>Colegiado</label>
-                    <label for="">Si</label><input v-model="novoDoctor.coledoc" type="radio" name="colegiado" id="si" required />
-                    <label for="">No</label><input v-model="novoDoctor.coledoc" type="radio" name="colegiado" id="no">
+                    <input  v-model="novoDoctor.coledoc"
+                        type="radio" 
+                        :value="false"
+                        name="colegiado" 
+                        id="si-radio" 
+                        required />
+                    <label for="si-radio">Si</label>
+                            <input 
+                            v-model="novoDoctor.coledoc" 
+                            type="radio" 
+                            :value="true"
+                            name="colegiado" 
+                            id="no-radio"
+                            required>
+                    <label for="no-radio">No</label>
                 </div>
+
                 <div class="campo campo-correo">
                     <label>Correo:</label>
                     <input v-model="novoDoctor.maildoc" type="email" required />
                 </div>
+
             </div>
             <div class="fila">
                 <div class="campo campo-telefono">
                     <label>Telefono:</label>
-                    <input v-model="novoDoctor.movildoc" type="text" required />
+                    <input v-model="novoDoctor.movildoc" 
+                    type="text" 
+                    pattern="[679][0-9]{8}"
+                    required />
                 </div>
+
                 <div v-if="novoDoctor.movildoc !== '' && (!validarTelf())" class="error-message">
                     <p class="error">O teléfono non é válido</p>
                 </div>
+
                 <div class="campo campo-especialidad">
                     <label>Especialidad:</label>
                     <select id="especialidad" v-model="novoDoctor.espedoc" required>
@@ -55,7 +72,7 @@
             </div>
             <div class="campo-condicions">
                 <label>
-                    <input v-model="novoDoctor.lodpac" type="checkbox" /> Aceptar a
+                    <input v-model="novoDoctor.loddoc" type="checkbox" /> Aceptar a
                     <a :href="$router.resolve({ name: 'PoliticaPrivacidad' }).href" target="_blank"
                         rel="noopener noreferrer">
                         Política de privacidade e confidencialidade
@@ -66,8 +83,9 @@
                 type="submit" 
                 class="btn-guardar" 
                 :disabled="novoDoctor.nomedoc === '' ||
-                    novoDoctor.apeldoc === '' ||
-                    !novoDoctor.espedoc
+                           novoDoctor.apeldoc === '' ||
+                           !novoDoctor.espedoc ||
+                           !novoDoctor.loddoc
                 ">
                 Gardar
             </button>
@@ -76,6 +94,7 @@
         <table v-if="doctores.length > 0">
             <thead>
                 <tr>
+                    <th>#</th>
                     <th>ID</th>
                     <th>Apelidos</th>
                     <th>Nome</th>
@@ -85,7 +104,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(u, index) in pacientes" :key="index">
+                <tr v-for="(u, index) in doctores" :key="index">
                     <td style="text-align: center;">{{ index + 1 }}</td>
                     <td style="text-align: center;">{{ u.iddoc }}</td>
                     <td>{{ u.apeldoc }}</td>
@@ -96,7 +115,7 @@
                         <button @click="editarUsuario(index)" title="Editar">
                             ✏️
                         </button>
-                        <button @click="eliminarPaciente(index)" title="Eliminar">
+                        <button @click="eliminarUsuario(index)" title="Eliminar">
                             🗑️
                         </button>
                     </td>
@@ -109,6 +128,7 @@
 </template>
 
 <script setup>
+//Zona de Declaracións
     import { ref, reactive, onMounted } from 'vue'
     import { obtenerEspecialidades } from "../api/especialidades.js"
     import {
@@ -118,10 +138,13 @@
         modifyDoctor,
         deleteDoctor
     } from "../api/doctores.js"
+import { getPacientes } from '../api/pacientes.js'
     
     
 const especialidades = ref([])
+
 const doctores = ref([])  //almacena la lista de doctores e os seus cambios
+const editando = ref(false)
 
 const novoDoctor = reactive({
   iddoc: "",
@@ -131,18 +154,120 @@ const novoDoctor = reactive({
   movildoc: "",
   coledoc: "",
   espedoc: "",
+  loddoc: false //aceptación politica privacidade
 });
 
 /// Zona de ciclo de vida
 
 onMounted(async () => {
     especialidades.value = await obtenerEspecialidades();
+    doctores.value = await getDoctores();
 })
+
+
+
+
 
 const especialidad = especialidades.value.find(
     e => e.nm === novoDoctor.espedoc
 )
 
+
+// Zona de métodos ou funcións
+
+async function clear() {
+    Object.assign(novoDoctor, {
+        iddoc: "",
+        nomedoc: "",
+        apeldoc: "",
+        maildoc: "",
+        movildoc: "",
+        coledoc: "",
+        espedoc: "",
+        loddoc: false
+    })
+}
+//CRUD
+//Create
+async function guardarDoctor() {
+    if (!validarTelf()) {
+        console.log('telefono inválido');        
+        return;
+    }
+    try {
+        if (editando.value) {
+            const doctorModificado = await modifyDoctor(
+                novoDoctor.iddoc,
+                novoDoctor
+            );
+
+            const index = doctores.value.findIndex(
+                (d) => d.iddoc === novoDoctor.iddoc
+            );
+
+            if (index !== -1) {
+                doctores.value[index] = doctorModificado;
+            }
+        } else {
+            const doctorGuardado = await saveDoctor(novoDoctor);
+            doctores.value.push(doctorGuardado);
+
+            console.log("Doctor gardado con éxito");
+            await clear();
+
+        }
+
+        editando.value = false;
+        
+    } catch {
+        console.error('Error ao gardar doctor: ', error);
+    }
+}
+//Read
+async function buscarDoctor() {
+    try {
+        const especialidad = novoDoctor.espedoc.trim();
+
+        if(!especialidad) {
+            console.log("Selecciona unha especialidade");
+            return;            
+        }
+
+        const todosDoctores = await getDoctores();
+        doctores.value = todosDoctores.filter(doctor => doctor.espedoc === especialidad)
+    } catch (error) {
+        if (error.response?.status === 404) {
+            console.log("Doctor no encontrado");
+        } else {
+            console.error("Error: ", error)
+        }
+    }
+}
+
+//Update
+async function editarUsuario(index) {
+  const doctor = doctores.value[index];   //carga os datos do paciente elixido no formulario
+  
+  Object.assign(novoDoctor, doctor);  // carga os datos do paciente no formulario recorda v-model do formulario é novoPaciente
+  
+  //evitar que se cargue el _id de mongoDB en el formulario
+  delete novoDoctor._id;
+  editando.value = true;
+  usedoctorStore.seleccionarDoctor(novoDoctor);
+}
+
+//Delete
+async function eliminarUsuario(index) {
+    try {
+        await deleteDoctor(doctores.value[index].iddoc)
+        doctores.value.splice(index, 1)
+        console.log("Doctor eliminado correctamente");
+        getDoctores();
+    } catch (error) {
+        console.error("Erro ao eliminar o doctor", error);
+    }
+    doctores.value.splice(index, 1);
+}
 
 // Funciones auxiliares
 function corrixirNome() {
@@ -181,10 +306,13 @@ const limpiaFormdoc = () => {
     movildoc: "",
     coledoc: "",
     espedoc: "",
+    loddoc: false
   });
-  // editando.value = false;
-  validarTelf.value = false;
+  editando.value = false;
+  //validarTelf.value = false;
 }
+
+
 
 </script>
 
@@ -285,6 +413,8 @@ form {
     margin: 0 auto;
     display: block;
 }
+
+
 
 .btn-guardar:hover {
     background-color: #637a76;

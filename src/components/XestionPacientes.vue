@@ -120,6 +120,7 @@
 /// Zona de declaracións
 import { ref, reactive, onMounted } from 'vue'
 import { obtenerMunicipios, obtenerProvincias } from "../api/municipios.js"
+import { usepacienteStore } from "../store/pacienteStore.js";
 import {
   savePaciente,
   getPacientes,
@@ -155,6 +156,13 @@ onMounted(async () => {
   provincias.value = await obtenerProvincias();
   pacientes.value = await getPacientes(); //carga os pacientes desde o backend
 })
+
+function seleccionarPaciente(paciente) {
+  const pacienteStore = usepacienteStore();
+  pacienteStore.seleccionarPaciente(paciente)
+}
+
+
 
 async function cargarMunicipios() {
   if (novoPaciente.propac === "") {
@@ -223,7 +231,7 @@ async function guardarPaciente() {
     }
     
     editando.value = false;
-
+    usepacienteStore.seleccionarPaciente(novoPaciente);
     /*
     const pacienteGuardado = await savePaciente(novoPaciente);
     pacientes.value.push(pacienteGuardado);
@@ -250,12 +258,12 @@ function gardarPaciente() {
       // Object.assign(novoPaciente, { dnipac: "", nomepac: "", mailpac: "", propac: "", munipac: "", movilpac: "", dirpac: "", nacipac: "" }) //reinicia o formulario
       }
       */
-     async function eliminarPaciente(index) {
-       try {
-         await deletePaciente(pacientes.value[index].dnipac);
-         pacientes.value.splice(index, 1)
-    console.log("Paciente eliminado correctamente");
-    getPacientes();
+async function eliminarPaciente(index) {
+  try {
+    await deletePaciente(pacientes.value[index].dnipac);
+      pacientes.value.splice(index, 1)
+      console.log("Paciente eliminado correctamente");
+      getPacientes();
   } catch (error) {
     console.error("Erro ao eliminar o paciente:", error);
   }
@@ -268,6 +276,7 @@ async function editarUsuario(index) {
   //evitar que se cargue el _id de mongoDB en el formulario
   delete novoPaciente._id;
   editando.value = true;
+  usepacienteStore.seleccionarPaciente(novoPaciente);
   //cargar los municipios
   await cargarMunicipios();
 }
@@ -284,6 +293,7 @@ async function buscarPaciente() {
     const paciente = await getPacienteByDni(dni);
 
     Object.assign(novoPaciente, paciente);
+    seleccionarPaciente(paciente);
     await cargarMunicipios();
 
     console.log("Paciente encontrado:", paciente);

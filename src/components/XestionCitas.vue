@@ -1,0 +1,6 @@
+onMounted(
+    async () => {
+        await cargarDatos();
+        
+    }
+)
