@@ -4,9 +4,9 @@
         <form @submit.prevent="guardarDoctor">
             <div class="fila">
                 <div class="campo campo-id">
-                    <label>ID:</label>
-                    <input v-model="novoDoctor.iddoc" v-on:input="novoDoctor.iddoc = novoDoctor.iddoc.toUpperCase()"
-                        type="text" required style="text-align: center;" />
+                    <label>ID</label>
+                    <input v-model="novoDoctor._id" 
+                        type="text" class="inputdisabled" required style="text-align: center;" readonly/>
                 </div>
                 <button type="button" @click="limpiaFormdoc">✨</button>
                 <button type="button" @click="buscarDoctor">🔍</button>
@@ -106,7 +106,7 @@
             <tbody>
                 <tr v-for="(u, index) in doctores" :key="index">
                     <td style="text-align: center;">{{ index + 1 }}</td>
-                    <td style="text-align: center;">{{ u.iddoc }}</td>
+                    <td style="text-align: center;">{{ u._id }}</td>
                     <td>{{ u.apeldoc }}</td>
                     <td>{{ u.nomedoc }}</td>
                     <td>{{ u.movildoc }}</td>
@@ -131,6 +131,7 @@
 //Zona de Declaracións
     import { ref, reactive, onMounted } from 'vue'
     import { obtenerEspecialidades } from "../api/especialidades.js"
+    import { usedoctorStore } from "../store/doctorStore.js"
     import {
         saveDoctor,
         getDoctores,
@@ -147,7 +148,6 @@ const doctores = ref([])  //almacena la lista de doctores e os seus cambios
 const editando = ref(false)
 
 const novoDoctor = reactive({
-  iddoc: "",
   nomedoc: "",
   apeldoc: "",
   maildoc: "",
@@ -165,9 +165,6 @@ onMounted(async () => {
 })
 
 
-
-
-
 const especialidad = especialidades.value.find(
     e => e.nm === novoDoctor.espedoc
 )
@@ -177,7 +174,7 @@ const especialidad = especialidades.value.find(
 
 async function clear() {
     Object.assign(novoDoctor, {
-        iddoc: "",
+        _id: "",
         nomedoc: "",
         apeldoc: "",
         maildoc: "",
@@ -197,12 +194,12 @@ async function guardarDoctor() {
     try {
         if (editando.value) {
             const doctorModificado = await modifyDoctor(
-                novoDoctor.iddoc,
+                novoDoctor._id,
                 novoDoctor
             );
 
             const index = doctores.value.findIndex(
-                (d) => d.iddoc === novoDoctor.iddoc
+                (d) => d._id === novoDoctor._id
             );
 
             if (index !== -1) {
@@ -213,13 +210,12 @@ async function guardarDoctor() {
             doctores.value.push(doctorGuardado);
 
             console.log("Doctor gardado con éxito");
-            await clear();
-
         }
+        await clear();
 
         editando.value = false;
         
-    } catch {
+    } catch (error) {
         console.error('Error ao gardar doctor: ', error);
     }
 }
@@ -230,7 +226,7 @@ async function buscarDoctor() {
 
         if(!especialidad) {
             console.log("Selecciona unha especialidade");
-            return;            
+            return;
         }
 
         const todosDoctores = await getDoctores();
@@ -249,17 +245,15 @@ async function editarUsuario(index) {
   const doctor = doctores.value[index];   //carga os datos do paciente elixido no formulario
   
   Object.assign(novoDoctor, doctor);  // carga os datos do paciente no formulario recorda v-model do formulario é novoPaciente
-  
-  //evitar que se cargue el _id de mongoDB en el formulario
-  delete novoDoctor._id;
+
   editando.value = true;
-  usedoctorStore.seleccionarDoctor(novoDoctor);
+  //usedoctorStore.seleccionarDoctor(novoDoctor);
 }
 
 //Delete
 async function eliminarUsuario(index) {
     try {
-        await deleteDoctor(doctores.value[index].iddoc)
+        await deleteDoctor(doctores.value[index]._id)
         doctores.value.splice(index, 1)
         console.log("Doctor eliminado correctamente");
         getDoctores();
@@ -289,7 +283,7 @@ function corrixirApelido() {
       .join(' ');
     }
   }
-  
+
   function validarTelf() {
     const telfRegex = /^[6|7]\d{8}$/;
     if (novoDoctor.movildoc != "") {
@@ -299,7 +293,6 @@ function corrixirApelido() {
 
 const limpiaFormdoc = () => {
   Object.assign(novoDoctor, {
-    iddoc: "",
     nomedoc: "",
     apeldoc: "",
     maildoc: "",
@@ -414,7 +407,9 @@ form {
     display: block;
 }
 
-
+.campo input[readonly] {
+    background-color: rgb(224, 224, 224);
+}
 
 .btn-guardar:hover {
     background-color: #637a76;

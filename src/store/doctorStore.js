@@ -2,32 +2,32 @@
 import { defineStore } from 'pinia'
 
 
-// Creamos el store de pacientes
-// paciente es el identificador único de este store.
-export const usepacienteStore = defineStore('paciente', {
+// Creamos el store de doctor
+// doctor es el identificador único de este store.
+export const usedoctorStore = defineStore('doctor', {
 
     //STATE: contiene los datos que queremos compartir
     //entre los diferentes componenets de Vue.
     state: () => ({
-        pacientes: [],
-        dnipac: null,
-        nomepac: null,
-        apelpac: null
+        id:null,
+        nombre: [],
+        apellido: null,
+        especialidad: null
     }),
 
     actions: {
-        // Recibe un objeto paciente como parámetro
+        // Recibe un objeto doctor como parámetro
         // Guarda sus datos en el store de Pinia.
-        seleccionarPaciente(paciente) {
-            this.dnipac = paciente.dnipac; // Guardamos el dni
-            this.nomepac = paciente.nomepac; // Guardamos el nombre
-            this.apelpac = paciente.apelpac;  // Guardamos el apellido
+        seleccionarDoctor(doctor) {
+            this.id = doctor._id; // Guardamos el dni
+            this.apellido = doctor.apeldoc; // Guardamos el nombre
+            this.especialidad = doctor.espedoc;  // Guardamos el apellido
         },
 
-        limpiarPaciente() {
-            this.dnipac = null;
-            this.nomepac = null;
-            this.apelpac = null;
+        limpiarDoctor() {
+            this.id = null;
+            this.apellido = null;
+            this.especialidad = null;
         }
     }
 });

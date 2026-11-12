@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const doctor = await Doctor.findOneAndDelete({
-      iddoc: req.params.id,
+      _id: req.params.id,
     });
 
     if (!doctor) {
@@ -111,10 +111,10 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:iddoc", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const doctor = await Doctor.findOneAndUpdate(
-      { iddoc: req.params.iddoc },
+      { _id: req.params.id },
       req.body,
       { new: true },
     );

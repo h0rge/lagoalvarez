@@ -29,11 +29,11 @@ export async function getDoctorByEspecialidad(especialidad) {
 // Actualizar doctor
 export async function modifyDoctor(id, doctor) {
     const res = await axios.put(`${API_URL}/doctores/${id}`, doctor);
-    return res.data;
+    return res.data.doctor;
 }   
 
 // Eliminar doctor
 export async function deleteDoctor(id) {
-    const res = await axios.delete(`${API_URL}/doctores/${id}`);
+const res = await axios.delete(`${API_URL}/doctores/${id}`);
     return res.data;
 }
