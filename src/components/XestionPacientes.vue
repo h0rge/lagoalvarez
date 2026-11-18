@@ -121,6 +121,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { obtenerMunicipios, obtenerProvincias } from "../api/municipios.js"
 import { usepacienteStore } from "../store/pacienteStore.js";
+import { alertaConfirmacion, alertaError, alertaExito, alertaInfo } from '../utils/alertas.js';
 import {
   savePaciente,
   getPacientes,
@@ -219,13 +220,14 @@ async function guardarPaciente() {
       }
 
       console.log("Paciente modificado correctamente");
+      alertaExito("Paciente modificadx")
       await clear();
     } else {
       const pacienteGuardado = await savePaciente(novoPaciente);
       pacientes.value.push(pacienteGuardado);
       
       console.log("Paciente gardado con éxito");
-      
+      alertaExito("Paciente guardadx")
       await clear();
       
     }
@@ -260,8 +262,15 @@ function gardarPaciente() {
       */
 async function eliminarPaciente(index) {
   try {
+    const confirmacion = alertaConfirmacion("Está seguro de eliminar alx paciente")
+    if (!(await confirmacion).isConfirmed) {
+      return
+    }
+
+    
     await deletePaciente(pacientes.value[index].dnipac);
       pacientes.value.splice(index, 1)
+      alertaExito("Paciente eliminadx correctamente")
       console.log("Paciente eliminado correctamente");
       getPacientes();
   } catch (error) {
