@@ -7,6 +7,7 @@ import mongoose from "mongoose"; //importa módulo de conexion a MongoDB
 
 import pacientesRutas from './rutas/pacientes.rutas.js';
 import doctoresRutas from './rutas/doctores.rutas.js';
+import citasRutas from './rutas/citas.rutas.js'
 //importa el modelo de paciente y las funciones de la api de pacientes
 
 //creamos la aplicacion express
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json()); //para poder recibir json en el body de las peticiones
 app.use(`/api/pacientes`, pacientesRutas); //usa las rutas de pacientes
 app.use(`/api/doctores`, doctoresRutas);
+app.use(`/api/citas`, citasRutas);
 // USA EL PUERTO DEFINIDO EN LAS VARIABLES DE ENTORNO, SI NO COGE 3000
 const PORT = process.env.PORT || 3000;
 

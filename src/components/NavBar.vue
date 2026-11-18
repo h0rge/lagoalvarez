@@ -10,6 +10,7 @@
       <li><RouterLink to="/">Inicio</RouterLink></li>
       <li><RouterLink to="/xestionpacientes">Pacientes</RouterLink></li>
       <li><RouterLink to="/xestion-doctores">Doctores</RouterLink></li>
+      <li><RouterLink to="/xestion-citas">Citas</RouterLink></li>
       <li><RouterLink to="/sobrenos">Sobre nós</RouterLink></li>
     </ul>
   </nav>
@@ -22,6 +23,9 @@ const isOpen = ref(false) // actívase cuando fago click
 
 <style scoped>
 .navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   box-sizing: border-box;
   width: 100%;
   display: flex;

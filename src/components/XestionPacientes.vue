@@ -11,8 +11,8 @@
         <div v-if="novoPaciente.dnipac !== '' && (!validarDni() || !validarDni2())" class="error-message">
           <p class="error">O DNI/CIF non é válido</p>
         </div>
-        <button type="button" @click="limpiaFormpac">Limpar</button>
-        <button type="button" @click="buscarPaciente">Buscar</button>
+        <button type="button" @click="limpiaFormpac">✨</button>
+        <button type="button" @click="buscarPaciente">🔍</button>
         <div class="campo campo-nome">
           <label>Nome:</label>
           <input v-model="novoPaciente.nomepac" type="text" @keyup.enter="corrixirNome()" @blur="corrixirNome()"
@@ -276,7 +276,7 @@ async function editarUsuario(index) {
   //evitar que se cargue el _id de mongoDB en el formulario
   delete novoPaciente._id;
   editando.value = true;
-  usepacienteStore.seleccionarPaciente(novoPaciente);
+  usepacienteStore().seleccionarPaciente(novoPaciente);
   //cargar los municipios
   await cargarMunicipios();
 }
@@ -395,6 +395,8 @@ form {
   padding: 2rem;
   align-self: center;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 2rem;
@@ -412,12 +414,12 @@ form {
 }
 
 .campo {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   display: flex;
   align-items: center;
-  /* label e input en la misma línea */
   gap: 0.5rem;
   border-radius: 0px;
+  min-width: 0;
 }
 
 .campo-dni {
@@ -445,10 +447,11 @@ form {
 
 .campo select {
   flex: 1;
+  min-width: 0;
   padding: 0.6rem;
   border: 1px solid #ddd;
   border-radius: 0px;
-  width: 100%;
+  width: auto;
 }
 
 .campo-provincia {
@@ -459,7 +462,8 @@ form {
 
 .campo label {
   max-width: 100px;
-  /* ancho fijo para alinear */
+  flex: 0 0 auto;
+  white-space: nowrap;
   font-weight: 500;
   font: bold
 }

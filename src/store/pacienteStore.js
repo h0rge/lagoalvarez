@@ -25,9 +25,11 @@ export const usepacienteStore = defineStore('paciente', {
         },
 
         limpiarPaciente() {
+
             this.dnipac = null;
             this.nomepac = null;
             this.apelpac = null;
+            
         }
     }
 });

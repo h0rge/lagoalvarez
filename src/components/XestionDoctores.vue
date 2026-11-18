@@ -243,7 +243,7 @@ async function buscarDoctor() {
 //Update
 async function editarUsuario(index) {
   const doctor = doctores.value[index];   //carga os datos do paciente elixido no formulario
-  
+  usedoctorStore().seleccionarDoctor(doctor)
   Object.assign(novoDoctor, doctor);  // carga os datos do paciente no formulario recorda v-model do formulario é novoPaciente
 
   editando.value = true;
@@ -368,13 +368,29 @@ form {
 
 .campo input,
 .campo select {
+    flex: 1;
     width: 100%;
+    min-width: 0;
     min-height: 2.5rem;
     padding: 0.55rem 0.7rem;
     border: 1px solid #d1d5db;
     border-radius: 3px;
     box-sizing: border-box;
     background: #fff;
+}
+
+.campo input:not([type="radio"]),
+.campo select {
+    width: auto;
+}
+
+.campo-colegiado input[type="radio"] {
+    width: 1rem;
+    height: 1rem;
+    min-height: 1rem;
+    flex: 0 0 auto;
+    padding: 0;
+    margin: 0;
 }
 
 .campo input:focus,
