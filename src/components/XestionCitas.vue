@@ -136,6 +136,7 @@
   import { usedoctorStore } from "../store/doctorStore.js"
   import { saveCita, getCitas, modifyCita, deleteCita } from "../api/citas.js";
   import { getDoctores } from "../api/doctores.js";
+  import { alertaConfirmacion, alertaExito } from "../utils/alertas.js";
     
 
 const citas = ref([])  //almacena la lista de doctores e os seus cambios
@@ -231,12 +232,14 @@ async function guardarCita() {
 
                 if (index !== -1) {
                     citas.value[index] = citaModificada;
+                    alertaExito("Cita modificada")
                 }
         } else {
             
             const citaGuardada = await saveCita(novasCitas);
             citas.value.push(citaGuardada);
-            console.log("Doctor gardado con éxito");
+            console.log("Cita gardada con éxito");
+            alertaExito("Cita gardada")
         }
         limpiarCasiTodo();
         await buscarPaciente();
@@ -292,6 +295,10 @@ async function editarCita(index) {
 //Delete
 async function eliminarCita(index) {
     try {
+        const confirmacion = alertaConfirmacion("Eliminar la cita?")
+        if (!(await confirmacion).isConfirmed) {
+            return
+        }
         await deleteCita(citas.value[index]._id)
         limpiarCasiTodo()
         await buscarPaciente();

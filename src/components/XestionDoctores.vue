@@ -132,6 +132,7 @@
     import { ref, reactive, onMounted } from 'vue'
     import { obtenerEspecialidades } from "../api/especialidades.js"
     import { usedoctorStore } from "../store/doctorStore.js"
+    import { alertaConfirmacion, alertaError, alertaExito } from '../utils/alertas.js'
     import {
         saveDoctor,
         getDoctores,
@@ -205,11 +206,14 @@ async function guardarDoctor() {
             if (index !== -1) {
                 doctores.value[index] = doctorModificado;
             }
+            alertaExito("Doctor modificadx")
+
         } else {
             const doctorGuardado = await saveDoctor(novoDoctor);
             doctores.value.push(doctorGuardado);
 
             console.log("Doctor gardado con éxito");
+            alertaExito("Doctor guardadx")
         }
         await clear();
 
@@ -253,8 +257,13 @@ async function editarUsuario(index) {
 //Delete
 async function eliminarUsuario(index) {
     try {
+        const confirmacion = alertaConfirmacion("Está seguro de eliminar alx paciente")
+    if (!(await confirmacion).isConfirmed) {
+      return
+    }
         await deleteDoctor(doctores.value[index]._id)
         doctores.value.splice(index, 1)
+        alertaExito("Doctor eliminadx correctamente")
         console.log("Doctor eliminado correctamente");
         getDoctores();
     } catch (error) {
